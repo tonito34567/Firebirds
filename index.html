@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 Firebirds — Beschikbaarheid 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fire1: #FF4500;
+    --fire2: #FF8C00;
+    --fire3: #FFD700;
+    --dark: #0a0a0f;
+    --dark2: #12121a;
+    --dark3: #1c1c28;
+    --dark4: #252535;
+    --text: #f0f0f5;
+    --muted: #8888aa;
+    --yes: #22c55e;
+    --no: #ef4444;
+    --maybe: #f59e0b;
+    --open: #6366f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 500px;
+    background: radial-gradient(ellipse, rgba(255,69,0,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container { max-width: 700px; margin: 0 auto; padding: 24px 16px; position: relative; z-index: 1; }
+
+  header { text-align: center; margin-bottom: 32px; }
+  .logo-flame { font-size: 48px; display: block; animation: flicker 2.5s ease-in-out infinite; }
+  @keyframes flicker {
+    0%,100% { transform: scale(1) rotate(-2deg); }
+    33% { transform: scale(1.08) rotate(2deg); }
+    66% { transform: scale(0.96) rotate(-1deg); }
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 8vw, 56px);
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--fire1), var(--fire2), var(--fire3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  .subtitle { color: var(--muted); font-size: 14px; margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .sync-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--dark3); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 20px; font-size: 13px; color: var(--muted);
+  }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .sync-dot.ok    { background: var(--yes); box-shadow: 0 0 6px var(--yes); }
+  .sync-dot.error { background: var(--no);  box-shadow: 0 0 6px var(--no); }
+  .sync-dot.loading { background: var(--maybe); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .tabs { display: flex; gap: 4px; background: var(--dark3); padding: 4px; border-radius: 14px; margin-bottom: 24px; }
+  .tab {
+    flex: 1; padding: 10px; text-align: center; border-radius: 10px;
+    cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s;
+    color: var(--muted); border: none; background: none; font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active { background: linear-gradient(135deg, var(--fire1), var(--fire2)); color: white; box-shadow: 0 4px 16px rgba(255,69,0,0.4); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .player-btn {
+    padding: 12px 8px; border-radius: 12px; border: 2px solid var(--dark4);
+    background: var(--dark2); color: var(--text); cursor: pointer; text-align: center;
+    font-size: 14px; font-weight: 500; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .player-btn:hover { border-color: var(--fire2); }
+  .player-btn.selected { border-color: var(--fire1); background: rgba(255,69,0,0.15); color: var(--fire2); }
+
+  .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--fire2); margin-bottom: 12px; }
+
+  .game-card {
+    background: var(--dark2); border: 1px solid var(--dark4); border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  }
+  .game-date { background: var(--dark3); border-radius: 10px; padding: 8px 10px; text-align: center; min-width: 62px; flex-shrink: 0; }
+  .game-date .day { font-size: 20px; font-weight: 700; color: var(--fire2); line-height: 1; }
+  .game-date .month { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .game-info { flex: 1; min-width: 0; }
+  .game-teams { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .home { color: var(--fire2); }
+  .game-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .avail-btns { display: flex; gap: 6px; flex-shrink: 0; }
+  .avail-btn {
+    width: 38px; height: 38px; border-radius: 10px; border: 2px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; background: var(--dark3); color: var(--muted); font-family: 'DM Sans', sans-serif;
+  }
+  .avail-btn:hover { transform: scale(1.1); }
+  .avail-btn.yes.active   { background: rgba(34,197,94,0.2);  border-color: var(--yes);   color: var(--yes); }
+  .avail-btn.no.active    { background: rgba(239,68,68,0.2);  border-color: var(--no);    color: var(--no); }
+  .avail-btn.maybe.active { background: rgba(245,158,11,0.2); border-color: var(--maybe); color: var(--maybe); }
+
+  .save-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--fire1), var(--fire2));
+    color: white; border: none; border-radius: 14px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
+    cursor: pointer; margin-top: 24px; transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,69,0,0.35);
+  }
+  .save-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,69,0,0.5); }
+  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--fire1), var(--fire2));
+    color: white; padding: 14px 28px; border-radius: 50px;
+    font-weight: 600; font-size: 15px;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .refresh-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--dark3); border: 1px solid var(--dark4); border-radius: 10px;
+    padding: 8px 14px; color: var(--muted); font-size: 13px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 16px;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { border-color: var(--fire2); color: var(--fire2); }
+
+  .go-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--dark2); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 6px; font-size: 13px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .go-row:hover { background: var(--dark3); }
+  .go-date  { color: var(--fire2); font-weight: 600; min-width: 75px; flex-shrink: 0; }
+  .go-teams { flex: 1; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .go-bar   { flex: 0 0 80px; height: 6px; background: var(--dark4); border-radius: 3px; overflow: hidden; }
+  .go-fill  { height: 100%; background: linear-gradient(90deg, var(--fire1), var(--fire3)); border-radius: 3px; }
+
+  .stat-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 32px; height: 26px; border-radius: 20px;
+    font-size: 13px; font-weight: 700; padding: 0 8px;
+  }
+  .stat-yes   { background: rgba(34,197,94,0.15);  color: var(--yes); }
+  .stat-no    { background: rgba(239,68,68,0.15);  color: var(--no); }
+  .stat-maybe { background: rgba(245,158,11,0.15); color: var(--maybe); }
+  .stat-open  { background: rgba(99,102,241,0.15); color: var(--open); }
+
+  .player-overview-card {
+    background: var(--dark2); border-radius: 14px;
+    padding: 16px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .player-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--fire1), var(--fire2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; flex-shrink: 0;
+  }
+  .player-name-big { font-weight: 600; font-size: 15px; }
+  .player-stats-row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .progress-bar { width: 100%; height: 4px; background: var(--dark4); border-radius: 2px; margin-top: 8px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--fire1), var(--fire3)); border-radius: 2px; }
+
+  .step-ind { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: var(--dark3); color: var(--muted); flex-shrink: 0; }
+  .step-dot.done { background: var(--fire1); color: white; }
+  .step-arrow { color: var(--dark4); }
+  #step2-content { display: none; }
+  .chosen-player-label {
+    background: rgba(255,69,0,0.12); border: 1px solid rgba(255,69,0,0.3);
+    border-radius: 10px; padding: 10px 16px; margin-bottom: 20px;
+    font-size: 14px; color: var(--fire2); display: none;
+  }
+
+  /* Detail popup */
+  .detail-popup {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 200; padding: 16px;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .detail-popup.open { opacity: 1; pointer-events: all; }
+  .detail-sheet {
+    background: var(--dark2); border-radius: 20px 20px 16px 16px;
+    width: 100%; max-width: 500px; max-height: 85vh;
+    overflow-y: auto; padding: 20px;
+    transform: translateY(40px); transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .detail-popup.open .detail-sheet { transform: translateY(0); }
+  .detail-handle { width: 40px; height: 4px; background: var(--dark4); border-radius: 2px; margin: 0 auto 16px; }
+  .detail-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--fire2); letter-spacing: 2px; margin-bottom: 4px; }
+  .detail-meta { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .detail-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--dark4); font-size: 14px; }
+  .detail-row:last-child { border-bottom: none; }
+
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--dark4); border-top-color: var(--fire1); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay { text-align: center; padding: 40px 20px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <span class="logo-flame">🔥</span>
+    <h1>Firebirds</h1>
+    <p class="subtitle">Beschikbaarheid Competitie 2026</p>
+  </header>
+
+  <div class="sync-bar">
+    <div class="sync-dot loading" id="syncDot"></div>
+    <span id="syncMsg">Verbinden met Google Sheets…</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('invullen',this)">✏️ Invullen</button>
+    <button class="tab" onclick="switchTab('overzicht',this)">📊 Overzicht</button>
+    <button class="tab" onclick="switchTab('spelers',this)">👥 Spelers</button>
+  </div>
+
+  <!-- INVULLEN -->
+  <div class="panel active" id="tab-invullen">
+    <div class="step-ind">
+      <div class="step-dot done" id="dot1">1</div>
+      <span>Kies je naam</span>
+      <span class="step-arrow">›</span>
+      <div class="step-dot" id="dot2">2</div>
+      <span>Vul beschikbaarheid in</span>
+    </div>
+    <div class="section-label">Wie ben jij?</div>
+    <div class="player-grid" id="playerGrid"></div>
+    <div class="chosen-player-label" id="chosenLabel"></div>
+    <div id="step2-content">
+      <div class="section-label">Wedstrijden</div>
+      <div id="gamesList"></div>
+      <button class="save-btn" id="saveBtn" onclick="saveAvailability()">🔥 OPSLAAN</button>
+    </div>
+  </div>
+
+  <!-- OVERZICHT -->
+  <div class="panel" id="tab-overzicht">
+    <div class="section-label">Beschikbaarheid per wedstrijd</div>
+    <button class="refresh-btn" onclick="loadFromSheets()">🔄 Vernieuwen</button>
+    <div id="gameOverview"><div class="loading-overlay"><div class="spinner"></div>Laden…</div></div>
+  </div>
+
+  <!-- SPELERS -->
+  <div class="panel" id="tab-spelers">
+    <div class="section-label">Overzicht per speler</div>
+    <button class="refresh-btn" onclick="loadFromSheets()">🔄 Vernieuwen</button>
+    <div id="playerOverview"><div class="loading-overlay"><div class="spinner"></div>Laden…</div></div>
+  </div>
+</div>
+
+<!-- Detail popup -->
+<div class="detail-popup" id="detailPopup" onclick="closeDetail(event)">
+  <div class="detail-sheet">
+    <div class="detail-handle"></div>
+    <div class="detail-title" id="detailTitle"></div>
+    <div class="detail-meta" id="detailMeta"></div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz9NSb8m-7HAItP6NxDxbID3wgzOW_Nb7TOlsHNqlNe8P9zGegFf7jd6gNTE41Gelw6/exec';
+
+const PLAYERS = ['Caspar','Tjeerd','Ferdy','Kamiel','Michel','Roman','Charlon','Davey','Jeroen','Robin','Tonito','Robbert'];
+const GAMES = [
+  {id:1, day:'03',month:'apr',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Falcons'},
+  {id:2, day:'10',month:'apr',time:'20:00',loc:'Houten',     home:'Dragons/Knicks', away:'Firebirds'},
+  {id:3, day:'17',month:'apr',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Wombats'},
+  {id:4, day:'01',month:'mei',time:'20:00',loc:'Wijk b/D',   home:'Wyck Lions',     away:'Firebirds'},
+  {id:5, day:'08',month:'mei',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Almere'},
+  {id:6, day:'15',month:'mei',time:'19:30',loc:'Soest',      home:'Knickerbockers', away:'Firebirds'},
+  {id:7, day:'29',month:'mei',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Quick'},
+  {id:8, day:'05',month:'jun',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Robur'},
+  {id:9, day:'12',month:'jun',time:'21:00',loc:'De Bilt',    home:'Centrals',       away:'Firebirds'},
+  {id:10,day:'19',month:'jun',time:'21:00',loc:'Lelystad',   home:'Falcons',        away:'Firebirds'},
+  {id:11,day:'26',month:'jun',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Dragons/Knicks'},
+  {id:12,day:'03',month:'jul',time:'20:30',loc:'De Bilt',    home:'Wombats',        away:'Firebirds'},
+  {id:13,day:'10',month:'jul',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Wyck Lions'},
+  {id:14,day:'21',month:'aug',time:'20:00',loc:'Almere',     home:'Almere',         away:'Firebirds'},
+  {id:15,day:'28',month:'aug',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Knickerbockers'},
+  {id:16,day:'04',month:'sep',time:'20:00',loc:'Amersfoort', home:'Quick',          away:'Firebirds'},
+  {id:17,day:'11',month:'sep',time:'20:00',loc:'Apeldoorn',  home:'Robur',          away:'Firebirds'},
+  {id:18,day:'18',month:'sep',time:'20:00',loc:'Zeist',      home:'Firebirds',      away:'Centrals'},
+];
+const EMOJIS = {Caspar:'⚡',Tsjeerd:'🎯',Ferdy:'💥',Kamiel:'🚀',Michel:'🔥',Roman:'⭐',Charlon:'🏆',Davey:'💫',Jeroen:'🌟',Robin:'⚾',Tonito:'🎮',Robbert:'🦅'};
+const emo = p => EMOJIS[p] || '👤';
+
+let data = {};
+PLAYERS.forEach(p => { data[p] = {}; GAMES.forEach(g => { data[p][g.id] = null; }); });
+let selectedPlayer = null;
+let currentAnswers = {};
+
+function setSyncStatus(state, msg) {
+  document.getElementById('syncDot').className = 'sync-dot ' + state;
+  document.getElementById('syncMsg').textContent = msg;
+}
+
+async function loadFromSheets() {
+  setSyncStatus('loading', 'Data ophalen uit Google Sheets…');
+  try {
+    const res = await fetch(SHEET_URL + '?t=' + Date.now());
+    const rows = await res.json();
+    rows.forEach(row => {
+      const player = row[0];
+      if (!PLAYERS.includes(player)) return;
+      GAMES.forEach((g, i) => {
+        const v = row[i + 1];
+        data[player][g.id] = (v === 'Ja' || v === 'Nee' || v === '?') ? v : null;
+      });
+    });
+    setSyncStatus('ok', 'Live gesynchroniseerd ✓');
+    buildOverview();
+    buildPlayerOverview();
+    if (selectedPlayer) {
+      GAMES.forEach(g => { currentAnswers[g.id] = data[selectedPlayer][g.id] || null; });
+      buildGamesList();
+    }
+  } catch(e) {
+    setSyncStatus('error', 'Kan Google Sheets niet bereiken — controleer de script URL');
+  }
+}
+
+async function saveAvailability() {
+  if (!selectedPlayer) return;
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Opslaan…';
+  data[selectedPlayer] = { ...currentAnswers };
+  const answers = GAMES.map(g => currentAnswers[g.id] || '');
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ player: selectedPlayer, answers }),
+      headers: { 'Content-Type': 'text/plain' },
+    });
+    showToast(`✅ Opgeslagen! Bedankt ${selectedPlayer}!`);
+    setSyncStatus('ok', `${selectedPlayer} opgeslagen in Google Sheets ✓`);
+    buildOverview();
+    buildPlayerOverview();
+  } catch(e) {
+    showToast('❌ Fout bij opslaan — probeer opnieuw');
+    setSyncStatus('error', 'Opslaan mislukt');
+  }
+  btn.disabled = false;
+  btn.textContent = '🔥 OPSLAAN';
+}
+
+function buildPlayerGrid() {
+  const grid = document.getElementById('playerGrid');
+  PLAYERS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'player-btn';
+    btn.innerHTML = `<div style="font-size:22px;margin-bottom:4px">${emo(p)}</div>${p}`;
+    btn.onclick = () => selectPlayer(p);
+    btn.id = 'pbtn-' + p;
+    grid.appendChild(btn);
+  });
+}
+
+function selectPlayer(name) {
+  selectedPlayer = name;
+  document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('pbtn-' + name).classList.add('selected');
+  document.getElementById('dot2').classList.add('done');
+  const lbl = document.getElementById('chosenLabel');
+  lbl.style.display = 'block';
+  lbl.innerHTML = `${emo(name)} Hoi <strong>${name}</strong>! Vul hieronder je beschikbaarheid in:`;
+  currentAnswers = {};
+  GAMES.forEach(g => { currentAnswers[g.id] = data[name][g.id] || null; });
+  buildGamesList();
+  document.getElementById('step2-content').style.display = 'block';
+  setTimeout(() => document.getElementById('step2-content').scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+}
+
+function buildGamesList() {
+  const list = document.getElementById('gamesList');
+  list.innerHTML = '';
+  GAMES.forEach(g => {
+    const isHome = g.home === 'Firebirds';
+    const cur = currentAnswers[g.id];
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.innerHTML = `
+      <div class="game-date"><div class="day">${g.day}</div><div class="month">${g.month}</div></div>
+      <div class="game-info">
+        <div class="game-teams">
+          ${isHome
+            ? `<span class="home">🔥 ${g.home}</span> <span style="color:var(--muted)">vs</span> <span>${g.away}</span>`
+            : `<span>${g.home}</span> <span style="color:var(--muted)">vs</span> <span class="home">🔥 ${g.away}</span>`}
+        </div>
+        <div class="game-meta">🕐 ${g.time} &nbsp;|&nbsp; 📍 ${g.loc} ${isHome?'&nbsp;|&nbsp;🏠 Thuis':'&nbsp;|&nbsp;✈️ Uit'}</div>
+      </div>
+      <div class="avail-btns">
+        <button class="avail-btn yes   ${cur==='Ja' ?'active':''}" onclick="setAnswer(${g.id},'Ja',this)"  title="Ja">✅</button>
+        <button class="avail-btn no    ${cur==='Nee'?'active':''}" onclick="setAnswer(${g.id},'Nee',this)" title="Nee">❌</button>
+        <button class="avail-btn maybe ${cur==='?'  ?'active':''}" onclick="setAnswer(${g.id},'?',this)"   title="Misschien">❓</button>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function setAnswer(gameId, val, btn) {
+  currentAnswers[gameId] = val;
+  btn.closest('.game-card').querySelectorAll('.avail-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function buildOverview() {
+  const el = document.getElementById('gameOverview');
+  el.innerHTML = '';
+  const rb = document.createElement('button');
+  rb.className = 'refresh-btn'; rb.innerHTML = '🔄 Vernieuwen'; rb.onclick = loadFromSheets;
+  el.appendChild(rb);
+  GAMES.forEach(g => {
+    const c = {Ja:0,Nee:0,'?':0,open:0};
+    PLAYERS.forEach(p => { const v=data[p][g.id]; v?c[v]++:c.open++; });
+    const pct = Math.round(c.Ja/PLAYERS.length*100);
+    const isHome = g.home==='Firebirds';
+    const row = document.createElement('div');
+    row.className = 'go-row';
+    row.onclick = () => openDetail(g);
+    row.innerHTML = `
+      <div class="go-date">${g.day} ${g.month}</div>
+      <div class="go-teams">${isHome?g.away:'@ '+g.home}</div>
+      <div class="go-bar"><div class="go-fill" style="width:${pct}%"></div></div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <span class="stat-pill stat-yes">${c.Ja}</span>
+        <span class="stat-pill stat-no" style="font-size:11px">${c.Nee}</span>
+        ${c['?']?`<span class="stat-pill stat-maybe" style="font-size:11px">${c['?']}</span>`:''}
+        ${c.open?`<span class="stat-pill stat-open" style="font-size:11px">${c.open}</span>`:''}
+      </div>`;
+    el.appendChild(row);
+  });
+  const leg = document.createElement('div');
+  leg.style.cssText='display:flex;gap:12px;margin-top:16px;font-size:12px;color:var(--muted);flex-wrap:wrap';
+  leg.innerHTML=`<span><span class="stat-pill stat-yes">✓</span> Ja</span><span><span class="stat-pill stat-no">✗</span> Nee</span><span><span class="stat-pill stat-maybe">?</span> Misschien</span><span><span class="stat-pill stat-open">○</span> Open</span><span style="margin-left:auto;font-style:italic">Tik voor details</span>`;
+  el.appendChild(leg);
+}
+
+function openDetail(g) {
+  const isHome = g.home==='Firebirds';
+  document.getElementById('detailTitle').textContent = `${g.day} ${g.month} — ${isHome?g.away:'@ '+g.home}`;
+  document.getElementById('detailMeta').textContent = `🕐 ${g.time}  |  📍 ${g.loc}`;
+  const body = document.getElementById('detailBody');
+  body.innerHTML='';
+  PLAYERS.forEach(p => {
+    const v = data[p][g.id];
+    const pill = v==='Ja'  ? `<span class="stat-pill stat-yes">✅ Ja</span>`
+               : v==='Nee' ? `<span class="stat-pill stat-no">❌ Nee</span>`
+               : v==='?'   ? `<span class="stat-pill stat-maybe">❓ Misschien</span>`
+               :             `<span class="stat-pill stat-open">○ Open</span>`;
+    body.innerHTML+=`<div class="detail-row"><span>${emo(p)} ${p}</span>${pill}</div>`;
+  });
+  document.getElementById('detailPopup').classList.add('open');
+}
+
+function closeDetail(e) {
+  if(e.target===document.getElementById('detailPopup'))
+    document.getElementById('detailPopup').classList.remove('open');
+}
+
+function buildPlayerOverview() {
+  const el = document.getElementById('playerOverview');
+  el.innerHTML='';
+  const rb=document.createElement('button');
+  rb.className='refresh-btn';rb.innerHTML='🔄 Vernieuwen';rb.onclick=loadFromSheets;
+  el.appendChild(rb);
+  PLAYERS.forEach(p => {
+    const c={Ja:0,Nee:0,'?':0,open:0};
+    GAMES.forEach(g=>{const v=data[p][g.id];v?c[v]++:c.open++;});
+    const pct=Math.round(c.Ja/GAMES.length*100);
+    const card=document.createElement('div');
+    card.className='player-overview-card';
+    card.innerHTML=`
+      <div class="player-avatar">${emo(p)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="player-name-big">${p}</div>
+        <div class="player-stats-row">
+          <span class="stat-pill stat-yes">${c.Ja} ja</span>
+          <span class="stat-pill stat-no">${c.Nee} nee</span>
+          ${c['?']?`<span class="stat-pill stat-maybe">${c['?']} ?</span>`:''}
+          ${c.open?`<span class="stat-pill stat-open">${c.open} open</span>`:''}
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--fire2);flex-shrink:0">${pct}%</div>`;
+    el.appendChild(card);
+  });
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+buildPlayerGrid();
+loadFromSheets();
+</script>
+</body>
+</html>

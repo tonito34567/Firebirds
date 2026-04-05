@@ -219,6 +219,68 @@
   .spinner { width: 36px; height: 36px; border: 3px solid var(--dark4); border-top-color: var(--fire1); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-overlay { text-align: center; padding: 40px 20px; color: var(--muted); }
+
+  /* Stand tab */
+  .stand-summary {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px;
+  }
+  .stand-box {
+    background: var(--dark2); border: 1px solid var(--dark4); border-radius: 14px;
+    padding: 14px 10px; text-align: center;
+  }
+  .stand-box .stand-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1;
+  }
+  .stand-box .stand-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .stand-box.win  .stand-num { color: var(--yes); }
+  .stand-box.draw .stand-num { color: var(--maybe); }
+  .stand-box.loss .stand-num { color: var(--no); }
+  .stand-box.played .stand-num { color: var(--fire2); }
+
+  .stand-split {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;
+  }
+  .split-card {
+    background: var(--dark2); border: 1px solid var(--dark4); border-radius: 14px; padding: 14px;
+  }
+  .split-card .split-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; color: var(--fire2); margin-bottom: 10px; }
+  .split-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+  .split-row span:first-child { color: var(--muted); }
+
+  /* Result rows in stand tab */
+  .result-card {
+    background: var(--dark2); border: 1px solid var(--dark4); border-radius: 14px;
+    padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+  }
+  .result-badge {
+    min-width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; flex-shrink: 0;
+  }
+  .result-badge.W { background: rgba(34,197,94,0.2); color: var(--yes); border: 1px solid var(--yes); }
+  .result-badge.G { background: rgba(245,158,11,0.2); color: var(--maybe); border: 1px solid var(--maybe); }
+  .result-badge.V { background: rgba(239,68,68,0.2); color: var(--no); border: 1px solid var(--no); }
+  .result-badge.open { background: var(--dark3); color: var(--muted); border: 1px solid var(--dark4); font-size: 13px; }
+  .result-info { flex: 1; min-width: 0; }
+  .result-teams { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .result-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .result-score-area { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .score-input {
+    width: 46px; height: 36px; background: var(--dark3); border: 1px solid var(--dark4);
+    border-radius: 8px; color: var(--text); font-size: 15px; font-weight: 700;
+    text-align: center; font-family: 'DM Sans', sans-serif;
+  }
+  .score-input:focus { outline: none; border-color: var(--fire2); }
+  .score-sep { color: var(--muted); font-weight: 700; font-size: 16px; }
+  .score-save-btn {
+    height: 36px; padding: 0 12px; background: linear-gradient(135deg, var(--fire1), var(--fire2));
+    color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  }
+  .score-save-btn:hover { opacity: 0.85; }
+  .score-display {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--text); letter-spacing: 1px;
+  }
 </style>
 </head>
 <body>
@@ -238,6 +300,7 @@
     <button class="tab active" onclick="switchTab('invullen',this)">✏️ Invullen</button>
     <button class="tab" onclick="switchTab('overzicht',this)">📊 Overzicht</button>
     <button class="tab" onclick="switchTab('spelers',this)">👥 Spelers</button>
+    <button class="tab" onclick="switchTab('stand',this)">🏆 Stand</button>
   </div>
 
   <!-- INVULLEN -->
@@ -271,6 +334,15 @@
     <div class="section-label">Overzicht per speler</div>
     <button class="refresh-btn" onclick="loadFromSheets()">🔄 Vernieuwen</button>
     <div id="playerOverview"><div class="loading-overlay"><div class="spinner"></div>Laden…</div></div>
+  </div>
+
+  <!-- STAND -->
+  <div class="panel" id="tab-stand">
+    <div class="section-label">Seizoensstand</div>
+    <div id="standSummary" class="stand-summary"></div>
+    <div id="standSplit" class="stand-split"></div>
+    <div class="section-label" style="margin-top:8px">Uitslagen</div>
+    <div id="standResults"></div>
   </div>
 </div>
 
@@ -318,6 +390,10 @@ PLAYERS.forEach(p => { data[p] = {}; GAMES.forEach(g => { data[p][g.id] = null; 
 let selectedPlayer = null;
 let currentAnswers = {};
 
+// scores: { gameId: { home: number|null, away: number|null } }
+let scores = {};
+GAMES.forEach(g => { scores[g.id] = { home: null, away: null }; });
+
 function setSyncStatus(state, msg) {
   document.getElementById('syncDot').className = 'sync-dot ' + state;
   document.getElementById('syncMsg').textContent = msg;
@@ -329,6 +405,19 @@ async function loadFromSheets() {
     const res = await fetch(SHEET_URL + '?t=' + Date.now());
     const rows = await res.json();
     rows.forEach(row => {
+      // Scores row: first cell = '__scores__'
+      if (row[0] === '__scores__') {
+        GAMES.forEach((g, i) => {
+          const val = row[i + 1];
+          if (val && String(val).includes('-')) {
+            const parts = String(val).split('-');
+            scores[g.id] = { home: parseInt(parts[0]), away: parseInt(parts[1]) };
+          } else {
+            scores[g.id] = { home: null, away: null };
+          }
+        });
+        return;
+      }
       const player = row[0];
       if (!PLAYERS.includes(player)) return;
       GAMES.forEach((g, i) => {
@@ -339,6 +428,7 @@ async function loadFromSheets() {
     setSyncStatus('ok', 'Live gesynchroniseerd ✓');
     buildOverview();
     buildPlayerOverview();
+    buildStand();
     if (selectedPlayer) {
       GAMES.forEach(g => { currentAnswers[g.id] = data[selectedPlayer][g.id] || null; });
       buildGamesList();
@@ -517,6 +607,125 @@ function buildPlayerOverview() {
   });
 }
 
+async function saveScore(gameId) {
+  const h = parseInt(document.getElementById('sh-'+gameId).value);
+  const a = parseInt(document.getElementById('sa-'+gameId).value);
+  if (isNaN(h) || isNaN(a)) { showToast('⚠️ Vul beide scores in'); return; }
+  scores[gameId] = { home: h, away: a };
+  const scoreArr = GAMES.map(g => {
+    const s = scores[g.id];
+    return (s.home !== null && s.away !== null) ? `${s.home}-${s.away}` : '';
+  });
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ type: 'scores', scores: scoreArr }),
+      headers: { 'Content-Type': 'text/plain' },
+    });
+    showToast('✅ Uitslag opgeslagen!');
+    buildStand();
+  } catch(e) {
+    showToast('❌ Fout bij opslaan');
+  }
+}
+
+function getResult(game) {
+  const s = scores[game.id];
+  if (s.home === null || s.away === null) return null;
+  const isHome = game.home === 'Firebirds';
+  const fb = isHome ? s.home : s.away;
+  const opp = isHome ? s.away : s.home;
+  if (fb > opp) return 'W';
+  if (fb === opp) return 'G';
+  return 'V';
+}
+
+function buildStand() {
+  // Summary boxes
+  let played=0, wins=0, draws=0, losses=0;
+  let homeP=0,homeW=0,homeG=0,homeV=0;
+  let awayP=0,awayW=0,awayG=0,awayV=0;
+  GAMES.forEach(g => {
+    const r = getResult(g);
+    if (!r) return;
+    played++;
+    const isHome = g.home === 'Firebirds';
+    if (r==='W') { wins++; isHome?homeW++:awayW++; }
+    else if (r==='G') { draws++; isHome?homeG++:awayG++; }
+    else { losses++; isHome?homeV++:awayV++; }
+    if (isHome) homeP++; else awayP++;
+  });
+
+  document.getElementById('standSummary').innerHTML = `
+    <div class="stand-box played"><div class="stand-num">${played}</div><div class="stand-lbl">Gespeeld</div></div>
+    <div class="stand-box win"><div class="stand-num">${wins}</div><div class="stand-lbl">Gewonnen</div></div>
+    <div class="stand-box draw"><div class="stand-num">${draws}</div><div class="stand-lbl">Gelijk</div></div>
+    <div class="stand-box loss"><div class="stand-num">${losses}</div><div class="stand-lbl">Verloren</div></div>`;
+
+  document.getElementById('standSplit').innerHTML = `
+    <div class="split-card">
+      <div class="split-title">🏠 Thuis</div>
+      <div class="split-row"><span>Gespeeld</span><span>${homeP}</span></div>
+      <div class="split-row"><span style="color:var(--yes)">Gewonnen</span><span>${homeW}</span></div>
+      <div class="split-row"><span style="color:var(--maybe)">Gelijk</span><span>${homeG}</span></div>
+      <div class="split-row"><span style="color:var(--no)">Verloren</span><span>${homeV}</span></div>
+    </div>
+    <div class="split-card">
+      <div class="split-title">✈️ Uit</div>
+      <div class="split-row"><span>Gespeeld</span><span>${awayP}</span></div>
+      <div class="split-row"><span style="color:var(--yes)">Gewonnen</span><span>${awayW}</span></div>
+      <div class="split-row"><span style="color:var(--maybe)">Gelijk</span><span>${awayG}</span></div>
+      <div class="split-row"><span style="color:var(--no)">Verloren</span><span>${awayV}</span></div>
+    </div>`;
+
+  // Result cards
+  const el = document.getElementById('standResults');
+  el.innerHTML = '';
+  GAMES.forEach(g => {
+    const isHome = g.home === 'Firebirds';
+    const s = scores[g.id];
+    const r = getResult(g);
+    const hasScore = s.home !== null && s.away !== null;
+
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    const badgeClass = r || 'open';
+    const badgeText = r || '—';
+
+    const scoreArea = hasScore
+      ? `<div class="result-score-area">
+           <div class="score-display">${s.home}–${s.away}</div>
+           <button class="score-save-btn" onclick="clearScore(${g.id})" title="Aanpassen" style="background:var(--dark3);color:var(--muted);border:1px solid var(--dark4)">✏️</button>
+         </div>`
+      : `<div class="result-score-area">
+           <input class="score-input" id="sh-${g.id}" type="number" min="0" placeholder="0" title="Thuis">
+           <span class="score-sep">–</span>
+           <input class="score-input" id="sa-${g.id}" type="number" min="0" placeholder="0" title="Uit">
+           <button class="score-save-btn" onclick="saveScore(${g.id})">Opslaan</button>
+         </div>`;
+
+    card.innerHTML = `
+      <div class="result-badge ${badgeClass}">${badgeText}</div>
+      <div class="result-info">
+        <div class="result-teams">
+          ${isHome
+            ? `<span style="color:var(--fire2)">🔥 ${g.home}</span> vs ${g.away}`
+            : `${g.home} vs <span style="color:var(--fire2)">🔥 ${g.away}</span>`}
+        </div>
+        <div class="result-meta">📅 ${g.day} ${g.month} &nbsp;|&nbsp; ${isHome?'🏠 Thuis':'✈️ Uit'}</div>
+      </div>
+      ${scoreArea}`;
+    el.appendChild(card);
+  });
+}
+
+function clearScore(gameId) {
+  scores[gameId] = { home: null, away: null };
+  buildStand();
+}
+
 function switchTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -532,6 +741,7 @@ function showToast(msg) {
 
 buildPlayerGrid();
 loadFromSheets();
+buildStand();
 </script>
 </body>
 </html>

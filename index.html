@@ -361,28 +361,29 @@
 <script>
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz9NSb8m-7HAItP6NxDxbID3wgzOW_Nb7TOlsHNqlNe8P9zGegFf7jd6gNTE41Gelw6/exec';
 
-const PLAYERS = ['Caspar','Tjeerd','Ferdy','Kamiel','Michel','Roman','Charlon','Davey','Jeroen','Sander','Efrain','Robin','Tonito','Robbert'];
+const PLAYERS = ['Caspar','Tjeerd','Ferdy','Kamiel','Michel','Roman','Charlon','Davey','Sander','Jeroen','Efrain','Robin','Tonito','Robbert'];
 const GAMES = [
-  {id:1, day:'03',month:'apr',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Falcons'},
-  {id:2, day:'10',month:'apr',time:'20:00',loc:'Houten',            home:'Dragons/Knicks',   away:'Firebirds'},
-  {id:3, day:'17',month:'apr',time:'20:00',loc:'Enschede',          home:'Tex Town Tigers',  away:'Firebirds'},
-  {id:4, day:'01',month:'mei',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Centrals'},
-  {id:5, day:'08',month:'mei',time:'19:30',loc:'Lelystad',          home:'Falcons',          away:'Firebirds'},
-  {id:6, day:'15',month:'mei',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Dragons/Knicks'},
-  {id:7, day:'29',month:'mei',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Giants'},
-  {id:8, day:'05',month:'jun',time:'19:30',loc:'Wijk bij Duurstede',home:'Wyck Lions',       away:'Firebirds'},
-  {id:9, day:'12',month:'jun',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Almere'},
-  {id:10,day:'19',month:'jun',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Knickerbockers'},
-  {id:11,day:'26',month:'jun',time:'20:00',loc:'Amersfoort',        home:'Quick Amersfoort', away:'Firebirds'},
-  {id:12,day:'03',month:'jul',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Tex Town Tigers'},
-  {id:13,day:'10',month:'jul',time:'21:00',loc:'Zeist',             home:'Centrals',         away:'Firebirds'},
-  {id:14,day:'21',month:'aug',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Falcons'},
-  {id:15,day:'28',month:'aug',time:'20:00',loc:'Soest',             home:'Dragons/Knicks',   away:'Firebirds'},
-  {id:16,day:'04',month:'sep',time:'19:30',loc:'Hengelo',           home:'Giants',           away:'Firebirds'},
-  {id:17,day:'11',month:'sep',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Wyck Lions'},
-  {id:18,day:'18',month:'sep',time:'19:00',loc:'Almere',            home:'Almere',           away:'Firebirds'},
-  {id:19,day:'25',month:'sep',time:'19:30',loc:'Soest',             home:'Knickerbockers',   away:'Firebirds'},
-  {id:20,day:'02',month:'okt',time:'20:00',loc:'Zeist',             home:'Firebirds',        away:'Quick Amersfoort'},
+  {id:1, day:'03',month:'apr',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Falcons'},
+  {id:2, day:'10',month:'apr',time:'20:00',loc:'Houten',             home:'Dragons/Knicks',   away:'Firebirds'},
+  {id:3, day:'17',month:'apr',time:'20:00',loc:'Enschede',           home:'Tex Town Tigers',  away:'Firebirds'},
+  {id:4, day:'01',month:'mei',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Centrals'},
+  {id:5, day:'08',month:'mei',time:'19:30',loc:'Lelystad',           home:'Falcons',          away:'Firebirds'},
+  {id:6, day:'15',month:'mei',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Dragons/Knicks'},
+  {id:7, day:'29',month:'mei',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Giants'},
+  {id:8, day:'05',month:'jun',time:'19:30',loc:'Wijk Bij Duurstede', home:'Wyck Lions',       away:'Firebirds'},
+  {id:9, day:'12',month:'jun',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Tex Town Tigers'},
+  {id:10,day:'19',month:'jun',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Knickerbockers'},
+  {id:11,day:'26',month:'jun',time:'20:00',loc:'Amersfoort',         home:'Quick Amersfoort', away:'Firebirds'},
+  {id:12,day:'07',month:'jul',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Almere'},
+  {id:13,day:'10',month:'jul',time:'21:00',loc:'Zeist',              home:'Centrals',         away:'Firebirds'},
+  {id:14,day:'21',month:'aug',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Falcons'},
+  {id:15,day:'28',month:'aug',time:'20:00',loc:'Soest',              home:'Dragons/Knicks',   away:'Firebirds'},
+  {id:17,day:'11',month:'sep',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Wyck Lions'},
+  {id:18,day:'13',month:'sep',time:'14:00',loc:'Enschede',           home:'Tex Town Tigers',  away:'Firebirds'},
+  {id:19,day:'13',month:'sep',time:'16:00',loc:'Enschede',           home:'Giants',           away:'Firebirds'},
+  {id:20,day:'18',month:'sep',time:'19:00',loc:'Almere',             home:'Almere',           away:'Firebirds'},
+  {id:21,day:'25',month:'sep',time:'19:30',loc:'Soest',              home:'Knickerbockers',   away:'Firebirds'},
+  {id:22,day:'02',month:'okt',time:'20:00',loc:'Zeist',              home:'Firebirds',        away:'Quick Amersfoort'},
 ];
 const EMOJIS = {Caspar:'⚡',Tjeerd:'🎯',Ferdy:'💥',Kamiel:'🚀',Michel:'🔥',Roman:'⭐',Charlon:'🏆',Davey:'💫',Jeroen:'🌟',Sander:'🔱',Efrain:'🌶️',Robin:'⚾',Tonito:'🎮',Robbert:'🦅'};
 const emo = p => EMOJIS[p] || '👤';
